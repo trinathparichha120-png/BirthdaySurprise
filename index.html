@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Wish! | Premium Birthday Greetings</title>
+
+    <!-- NEW: Your Custom Web Tab Logo -->
+    <link rel="icon" href="1778523081622_2.png" type="image/png">
+
+    <!-- Open Graph / social share preview tags (Updated with your live links) -->
+    <meta property="og:title" content="You Got a Birthday Gift! 🎁">
+    <meta property="og:description" content="Someone made you a special digital birthday surprise. Tap to open it!">
+    <!-- Assuming you named the repo "gift" -->
+    <meta property="og:image" content="https://trinathparichha120-png.github.io/gift/giftbox.jpg">
+    <meta property="og:url" content="https://trinathparichha120-png.github.io/gift/">
+    <meta property="og:type" content="website">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="You Got a Birthday Gift! 🎁">
+    <meta name="twitter:description" content="Someone made you a special digital birthday surprise. Tap to open it!">
+    <meta name="twitter:image" content="https://trinathparichha120-png.github.io/gift/giftbox.jpg">
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Canvas Confetti Library for the burst effect! -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <!-- SCREEN 1: The Link Creator -->
+    <div id="creator-ui" class="glass-panel">
+        <h1>Create a Viral Birthday Gift 🎁</h1>
+        <p>Design a premium digital unboxing experience for your friend.</p>
+        
+        <input type="text" id="bdayName" placeholder="Birthday Person's Name">
+        <input type="text" id="senderName" placeholder="Your Name">
+        
+        <label class="file-upload">
+            Upload Their Photo
+            <input type="file" id="bdayPhoto" accept="image/*">
+        </label>
+
+        <!-- NEW: Pre-written Message Dropdown -->
+        <select id="messageTemplate" class="bday-select" onchange="fillTemplate()">
+            <option value="">💡 Choose a quick message (Optional)...</option>
+            <option value="Happy Birthday! Wishing you a day filled with happiness and a year filled with joy.">Short & Sweet</option>
+            <option value="Another adventure-filled year awaits you. Welcome it by celebrating your birthday with pomp and splendor. Wishing you a very happy and fun-filled birthday!">Adventure Awaits</option>
+            <option value="Count your life by smiles, not tears. Count your age by friends, not years. Happy Birthday!">Meaningful</option>
+            <option value="Hope your special day brings you all that your heart desires! Happy Birthday!">Warm Wishes</option>
+        </select>
+
+        <textarea id="bdayMessage" placeholder="Write a beautiful birthday wish..."></textarea>
+        
+        <button id="generateBtn" onclick="createBirthdayLink()">✨ Generate Gift Link</button>
+        
+        <div id="link-box" style="display: none;">
+            <input type="text" id="finalLink" readonly>
+            <button onclick="copyLink()">📋 Copy</button>
+            <button onclick="shareLink()">📤 Share</button>
+        </div>
+    </div>
+
+    <!-- SCREEN 2: The Unboxing Experience -->
+    <div id="receiver-ui" style="display: none;">
+        
+        <div id="tap-to-open" onclick="openGift()">
+            <h2 class="glow-text">Tap to Open Your Gift!</h2>
+            <img src="giftbox.jpg" alt="Gift Box" class="floating-box">
+        </div>
+
+        <div id="opened-card" class="glass-panel" style="display: none;">
+            <div class="sparkles" id="sparkles"></div>
+            <img src="" id="displayPhoto" class="bday-profile-img">
+            <h1 id="displayName">Happy Birthday!</h1>
+            <p id="displayMessage" class="bday-quote"></p>
+            <h3 id="displaySender"></h3>
+            
+            <button onclick="window.location.href=window.location.pathname" class="create-own-btn">Create a Gift for Someone Else</button>
+        </div>
+
+    </div>
+
+    <!-- NEW: Background Audio Player -->
+    <audio id="bdayAudio" src="bday-music.mp3" preload="auto"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
