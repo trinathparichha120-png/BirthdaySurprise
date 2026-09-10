@@ -1,11 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-9215D7LR8S"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-9215D7LR8S');
+    </script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Make a Wish! | Premium Birthday Greetings</title>
 
     <!-- NEW: Your Custom Web Tab Logo -->
+    <!-- IMPORTANT: this filename must exactly match the PNG you upload to your repo -->
     <link rel="icon" href="1778523081622_2.png" type="image/png">
 
     <!-- Open Graph / social share preview tags (Updated with your live links) -->
@@ -21,7 +32,7 @@
     <meta name="twitter:description" content="Someone made you a special digital birthday surprise. Tap to open it!">
     <meta name="twitter:image" content="https://trinathparichha120-png.github.io/gift/giftbox.jpg">
 
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Great+Vibes&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     
     <!-- Canvas Confetti Library for the burst effect! -->
@@ -36,6 +47,9 @@
         
         <input type="text" id="bdayName" placeholder="Birthday Person's Name">
         <input type="text" id="senderName" placeholder="Your Name">
+
+        <label class="date-label" for="bdayDate">🎂 Their Birthday (optional — shows a live age counter)</label>
+        <input type="date" id="bdayDate" class="bday-date-input">
         
         <label class="file-upload">
             Upload Their Photo
@@ -75,6 +89,19 @@
             <img src="" id="displayPhoto" class="bday-profile-img">
             <h1 id="displayName">Happy Birthday!</h1>
             <p id="displayMessage" class="bday-quote"></p>
+
+            <div id="ageCounter" class="age-counter" style="display: none;">
+                <p class="age-counter-title">🎉 Time You've Been Alive</p>
+                <div class="age-grid">
+                    <div class="age-unit"><span id="ageYears">0</span><label>Years</label></div>
+                    <div class="age-unit"><span id="ageMonths">0</span><label>Months</label></div>
+                    <div class="age-unit"><span id="ageDays">0</span><label>Days</label></div>
+                    <div class="age-unit"><span id="ageHours">0</span><label>Hours</label></div>
+                    <div class="age-unit"><span id="ageMinutes">0</span><label>Min</label></div>
+                    <div class="age-unit"><span id="ageSeconds">0</span><label>Sec</label></div>
+                </div>
+            </div>
+
             <h3 id="displaySender"></h3>
             
             <button onclick="window.location.href=window.location.pathname" class="create-own-btn">Create a Gift for Someone Else</button>
