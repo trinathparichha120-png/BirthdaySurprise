@@ -9,6 +9,7 @@ async function createBirthdayLink() {
     const bdayName = document.getElementById("bdayName").value.trim();
     const sender = document.getElementById("senderName").value.trim();
     const message = document.getElementById("bdayMessage").value.trim();
+    const birthDate = document.getElementById("bdayDate").value; // optional, format YYYY-MM-DD
     const photoFile = document.getElementById("bdayPhoto").files[0];
     const btn = document.getElementById("generateBtn");
 
@@ -28,7 +29,7 @@ async function createBirthdayLink() {
         const formData = new FormData();
         formData.append("image", photoFile);
         // Using your specific ImgBB API Key
-        const apiKey = 'd6572cc7df8598ddec0815512f6991a7'; 
+        const apiKey = 'd6572cc7df8598ddec0815512f6991a7';// here i not aplode the APi for sequrity
         
         try {
             const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
@@ -44,7 +45,8 @@ async function createBirthdayLink() {
 
     // Package the URL parameters safely
     const paramsObj = { n: bdayName, s: sender, m: message };
-    if (finalPhotoUrl !== "") paramsObj.p = finalPhotoUrl; 
+    if (finalPhotoUrl !== "") paramsObj.p = finalPhotoUrl;
+    if (birthDate !== "") paramsObj.b = birthDate;
 
     const params = new URLSearchParams(paramsObj);
     const baseUrl = window.location.origin + window.location.pathname;
@@ -104,6 +106,51 @@ function createSparkles() {
     }
 }
 
+// 2c. Live "time alive" counter — updates every real second
+function parseDateLocal(dateStr) {
+    // Parses 'YYYY-MM-DD' as a LOCAL midnight date (avoids UTC off-by-one-day issues)
+    const [y, m, d] = dateStr.split("-").map(Number);
+    return new Date(y, m - 1, d, 0, 0, 0);
+}
+
+function updateAgeCounter(birthDate) {
+    const now = new Date();
+
+    let years = now.getFullYear() - birthDate.getFullYear();
+    let months = now.getMonth() - birthDate.getMonth();
+    let days = now.getDate() - birthDate.getDate();
+    let hours = now.getHours() - birthDate.getHours();
+    let minutes = now.getMinutes() - birthDate.getMinutes();
+    let seconds = now.getSeconds() - birthDate.getSeconds();
+
+    if (seconds < 0) { seconds += 60; minutes--; }
+    if (minutes < 0) { minutes += 60; hours--; }
+    if (hours < 0) { hours += 24; days--; }
+    if (days < 0) {
+        // Borrow days from the previous calendar month
+        const prevMonthLastDay = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        days += prevMonthLastDay;
+        months--;
+    }
+    if (months < 0) { months += 12; years--; }
+
+    document.getElementById("ageYears").innerText = years;
+    document.getElementById("ageMonths").innerText = months;
+    document.getElementById("ageDays").innerText = days;
+    document.getElementById("ageHours").innerText = String(hours).padStart(2, "0");
+    document.getElementById("ageMinutes").innerText = String(minutes).padStart(2, "0");
+    document.getElementById("ageSeconds").innerText = String(seconds).padStart(2, "0");
+}
+
+function startAgeCounter(dateStr) {
+    const birthDate = parseDateLocal(dateStr);
+    if (isNaN(birthDate.getTime()) || birthDate > new Date()) return; // invalid or future date, skip silently
+
+    document.getElementById("ageCounter").style.display = "block";
+    updateAgeCounter(birthDate); // run immediately, don't wait 1s for first paint
+    setInterval(() => updateAgeCounter(birthDate), 1000);
+}
+
 // 3. Copy Button Logic
 function copyLink() {
     const linkInput = document.getElementById("finalLink");
@@ -151,6 +198,11 @@ window.onload = function() {
         } else {
             // Hide the image circle if they didn't upload a photo
             document.getElementById("displayPhoto").style.display = "none";
+        }
+
+        // Start the live age counter if a birth date was provided
+        if (params.has("b")) {
+            startAgeCounter(params.get("b"));
         }
     }
 }
