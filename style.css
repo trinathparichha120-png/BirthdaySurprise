@@ -59,9 +59,24 @@ body {
 }
 
 h1 {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 700;
     font-size: 28px;
     margin-bottom: 10px;
     background: linear-gradient(to right, #f8cdda, #1d2b64);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* The birthday person's name gets a handwritten, celebratory script look */
+#displayName {
+    font-family: 'Great Vibes', cursive;
+    font-weight: 400;
+    font-size: 46px;
+    line-height: 1.3;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+    background: linear-gradient(to right, #FFC75F, #f8cdda, #845EC2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
@@ -112,6 +127,32 @@ input[type="text"]:focus, textarea:focus {
     border-color: #f8cdda;
 }
 
+.date-label {
+    display: block;
+    text-align: left;
+    font-size: 13px;
+    color: #d1d5db;
+    margin-bottom: 8px;
+}
+
+input[type="date"].bday-date-input {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: border 0.3s ease;
+    color-scheme: dark;
+}
+
+input[type="date"].bday-date-input:focus {
+    border-color: #f8cdda;
+}
+
 textarea {
     resize: vertical;
     min-height: 100px;
@@ -143,6 +184,7 @@ textarea {
 
 /* --- Buttons --- */
 button {
+    font-family: 'Fredoka', sans-serif;
     background: linear-gradient(135deg, #FF6B6B 0%, #845EC2 100%);
     color: white;
     border: none;
@@ -228,6 +270,8 @@ button:hover {
 #opened-card .create-own-btn   { animation-delay: 1.15s; }
 
 .glow-text {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
     font-size: 24px;
     color: white;
     text-shadow: 0 0 15px #FF6B6B, 0 0 30px #845EC2;
@@ -252,6 +296,61 @@ button:hover {
     font-style: italic;
     margin: 20px 0;
     color: #f3f4f6;
+}
+
+#displaySender {
+    font-family: 'Fredoka', sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: #f8cdda;
+    letter-spacing: 0.5px;
+}
+
+/* --- Live Age Counter --- */
+.age-counter {
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 18px 12px;
+    margin: 20px 0;
+}
+
+.age-counter-title {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #d1d5db;
+    margin-bottom: 14px;
+}
+
+.age-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 6px;
+}
+
+.age-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.age-unit span {
+    font-family: 'Fredoka', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: #f8cdda;
+    text-shadow: 0 0 12px rgba(248, 205, 218, 0.5);
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+}
+
+.age-unit label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #9ca3af;
+    margin-top: 2px;
 }
 
 /* --- Animations --- */
