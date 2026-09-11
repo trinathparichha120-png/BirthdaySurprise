@@ -78,10 +78,46 @@
 
     <!-- SCREEN 2: The Unboxing Experience -->
     <div id="receiver-ui" style="display: none;">
+
+        <!-- NEW: Fireworks GIF overlay, faded in during the celebration reveal -->
+        <!-- IMPORTANT: rename your uploaded gif to fireworks.gif (or update this filename to match) -->
+        <div id="fireworks-bg" class="fireworks-bg"></div>
         
         <div id="tap-to-open" onclick="openGift()">
             <h2 class="glow-text">Tap to Open Your Gift!</h2>
             <img src="giftbox.jpg" alt="Gift Box" class="floating-box">
+        </div>
+
+        <!-- NEW: Mic-reactive candle-blowing stage -->
+        <div id="cake-stage" class="glass-panel" style="display: none;">
+            <h2 class="glow-text" style="font-size: 20px;">Make a wish & blow out the candle! 🕯️</h2>
+
+            <div class="cake-scene">
+                <div class="candle candle-1">
+                    <div class="wick"></div>
+                    <div class="flame"></div>
+                    <div class="smoke"></div>
+                </div>
+                <div class="candle candle-2">
+                    <div class="wick"></div>
+                    <div class="flame"></div>
+                    <div class="smoke"></div>
+                </div>
+                <div class="candle candle-3">
+                    <div class="wick"></div>
+                    <div class="flame"></div>
+                    <div class="smoke"></div>
+                </div>
+
+                <div class="frosting"></div>
+                <div class="cake-body"></div>
+                <div class="cake-base"></div>
+            </div>
+
+            <p class="mic-status" id="micStatus">🎤 Requesting microphone…</p>
+            <div class="volume-meter"><div class="volume-fill" id="volumeFill"></div></div>
+
+            <button id="fallbackBlowBtn" class="fallback-blow-btn" style="display: none;" onclick="extinguishCandle()">Can't blow? Tap here instead 💨</button>
         </div>
 
         <div id="opened-card" class="glass-panel" style="display: none;">
@@ -111,6 +147,10 @@
 
     <!-- NEW: Background Audio Player -->
     <audio id="bdayAudio" src="bday-music.mp3" preload="auto"></audio>
+
+    <!-- NEW: Firework burst sound, played once when the card reveals -->
+    <!-- IMPORTANT: rename your uploaded mp3 to fireworks.mp3 (or update this filename to match) -->
+    <audio id="fireworkAudio" src="fireworks.mp3" preload="auto"></audio>
 
     <script src="script.js"></script>
 </body>
