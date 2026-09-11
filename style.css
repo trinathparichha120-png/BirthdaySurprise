@@ -306,6 +306,186 @@ button:hover {
     letter-spacing: 0.5px;
 }
 
+/* --- Cake & Candle Blowing Stage --- */
+.cake-scene {
+    position: relative;
+    width: 220px;
+    height: 220px;
+    margin: 10px auto 20px;
+}
+
+.cake-base {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 180px;
+    height: 20px;
+    background: #3a2a1a;
+    border-radius: 50%;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.5);
+}
+
+.cake-body {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 80px;
+    background: linear-gradient(180deg, #a78bd6, #6a4a9e);
+    border-radius: 10px;
+    box-shadow: inset 0 -10px 15px rgba(0, 0, 0, 0.25);
+}
+
+.cake-body::before,
+.cake-body::after {
+    content: '';
+    position: absolute;
+    top: -6px;
+    width: 24px;
+    height: 24px;
+    background: #FF6B6B;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.6);
+}
+.cake-body::before { left: 16px; }
+.cake-body::after { right: 16px; }
+
+.frosting {
+    position: absolute;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 160px;
+    height: 26px;
+    background: linear-gradient(180deg, #fff5e6, #f8cdda);
+    border-radius: 50% 50% 20% 20% / 70% 70% 30% 30%;
+}
+
+.wick {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 16px;
+    background: #5a4632;
+    border-radius: 2px;
+}
+
+/* Candle body itself, striped pink like the reference photo, sits on the frosting */
+.candle {
+    position: absolute;
+    bottom: 114px;
+    width: 10px;
+}
+.candle::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 28px;
+    background: repeating-linear-gradient(
+        45deg,
+        #FF6B6B, #FF6B6B 4px,
+        #fff5e6 4px, #fff5e6 8px
+    );
+    border-radius: 3px 3px 1px 1px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.candle-1 { left: calc(50% - 45px); }
+.candle-2 { left: 50%; transform: translateX(-50%); }
+.candle-3 { left: calc(50% + 45px); }
+
+.wick {
+    position: absolute;
+    left: 50%;
+    bottom: 28px;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 8px;
+    background: #3a2a20;
+    border-radius: 1px;
+}
+
+.flame {
+    position: absolute;
+    left: 50%;
+    bottom: 34px;
+    width: 16px;
+    height: 32px;
+    background: radial-gradient(circle at 50% 75%, #fff6cc 0%, #ffce54 45%, #ff7b00 80%, transparent 100%);
+    border-radius: 50% 50% 50% 50% / 65% 65% 35% 35%;
+    transform-origin: bottom center;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 0 8px rgba(255, 150, 50, 0.8));
+}
+
+.smoke {
+    position: absolute;
+    left: 50%;
+    bottom: 62px;
+    transform: translateX(-50%);
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, rgba(230, 230, 230, 0.7), transparent 70%);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.mic-status {
+    font-size: 13px;
+    color: #d1d5db;
+    margin-bottom: 10px;
+}
+
+.volume-meter {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.volume-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #845EC2, #FF6B6B);
+    transition: width 0.05s linear;
+}
+
+.fallback-blow-btn {
+    margin-top: 5px;
+}
+
+/* NEW: Fireworks GIF overlay — covers the screen, faded in only during the celebration reveal */
+.fireworks-bg {
+    position: fixed;
+    inset: 0;
+    background-image: url('fireworks.gif');
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.8s ease;
+}
+
+.fireworks-bg.active {
+    opacity: 0.85;
+}
+
+/* Keep every glass panel visually above the fireworks layer */
+.glass-panel {
+    z-index: 1;
+}
+
 /* --- Live Age Counter --- */
 .age-counter {
     background: rgba(0, 0, 0, 0.3);
