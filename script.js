@@ -29,7 +29,7 @@ async function createBirthdayLink() {
         const formData = new FormData();
         formData.append("image", photoFile);
         // Using your specific ImgBB API Key
-        const apiKey = 'd6572cc7df8598ddec0815512f6991a7';// here i not aplode the APi for sequrity
+        const apiKey = 'd6572cc7df8598ddec0815512f6991a7'; 
         
         try {
             const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
@@ -61,14 +61,195 @@ async function createBirthdayLink() {
     btn.disabled = false;
 }
 
-// 2. The Unboxing Trigger (Confetti & Music!)
+// 2. Tapping the gift box moves to the candle-blowing stage
 function openGift() {
     document.getElementById("tap-to-open").style.display = "none";
+    document.getElementById("cake-stage").style.display = "block";
+    initCandleBlow();
+}
+
+// --- Mic-reactive candle blowing ---
+let audioCtx, analyser, micStream, blowRAF;
+let blowMeter = 0;
+let idlePhase = 0;
+let smoothedVolume = 0;
+const BLOW_THRESHOLD = 0.14;   // volume level counted as "blowing" — tweak if too sensitive/insensitive
+const BLOW_METER_MAX = 100;    // how much sustained blowing is needed to fully extinguish
+
+async function initCandleBlow() {
+    const micStatus = document.getElementById("micStatus");
+    const fallbackBtn = document.getElementById("fallbackBlowBtn");
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        micStatus.innerText = "🎤 Mic not supported on this browser — use the button below.";
+        fallbackBtn.style.display = "block";
+        startIdleFlicker();
+        return;
+    }
+
+    try {
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const source = audioCtx.createMediaStreamSource(micStream);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        source.connect(analyser);
+
+        micStatus.innerText = "🎤 Blow into your mic now!";
+        blowLoop();
+    } catch (err) {
+        micStatus.innerText = "🎤 Mic access denied — use the button below instead.";
+        fallbackBtn.style.display = "block";
+        startIdleFlicker();
+    }
+}
+
+// Runs every animation frame while the mic is active
+function blowLoop() {
+    const data = new Uint8Array(analyser.fftSize);
+    analyser.getByteTimeDomainData(data);
+
+    // RMS (root-mean-square) volume: 0 = silence, higher = louder
+    let sumSquares = 0;
+    for (let i = 0; i < data.length; i++) {
+        const centered = (data[i] - 128) / 128;
+        sumSquares += centered * centered;
+    }
+    const rms = Math.sqrt(sumSquares / data.length);
+
+    // Smooth so the flame doesn't jitter frame-to-frame
+    smoothedVolume += (rms - smoothedVolume) * 0.3;
+
+    animateFlame(smoothedVolume);
+    document.getElementById("volumeFill").style.width = Math.min(smoothedVolume * 300, 100) + "%";
+
+    // More/longer blowing fills the meter faster; it also drains slowly when you stop
+    if (smoothedVolume > BLOW_THRESHOLD) {
+        blowMeter += smoothedVolume * 8;
+    } else {
+        blowMeter -= 1.5;
+    }
+    blowMeter = Math.max(0, Math.min(BLOW_METER_MAX, blowMeter));
+
+    if (blowMeter >= BLOW_METER_MAX) {
+        extinguishCandle();
+        return;
+    }
+
+    blowRAF = requestAnimationFrame(blowLoop);
+}
+
+// Maps live mic volume to how the flames look: tilt, shrink, and dim as "air" hits them
+function animateFlame(volume) {
+    idlePhase += 0.15;
+
+    const flames = document.querySelectorAll(".flame");
+    const smokes = document.querySelectorAll(".smoke");
+
+    flames.forEach((flame, i) => {
+        const idleWobble = Math.sin(idlePhase + i * 1.4) * 2; // each candle wobbles slightly out of sync, like real flames
+        const skew = Math.min(volume * 180, 55) + idleWobble;
+        const shrink = Math.max(1 - volume * 1.4, 0.15);
+        const offsetX = Math.min(volume * 60, 18);
+        const opacity = Math.max(1 - volume * 1.2, 0.25);
+
+        flame.style.transform = `translateX(calc(-50% + ${offsetX}px)) skewX(${skew}deg) scaleY(${shrink})`;
+        flame.style.opacity = opacity;
+    });
+
+    smokes.forEach(smoke => {
+        smoke.style.opacity = Math.min(volume * 1.5, 0.6);
+    });
+}
+
+// Used when mic isn't available at all — just a gentle idle flicker, no reactivity
+function startIdleFlicker() {
+    function tick() {
+        idlePhase += 0.1;
+        document.querySelectorAll(".flame").forEach((flame, i) => {
+            const idleWobble = Math.sin(idlePhase + i * 1.4) * 3;
+            flame.style.transform = `translateX(-50%) skewX(${idleWobble}deg)`;
+        });
+        blowRAF = requestAnimationFrame(tick);
+    }
+    tick();
+}
+
+// Candle goes out — smoothly fade all flames, puff some smoke, then reveal the card
+function extinguishCandle() {
+    if (blowRAF) cancelAnimationFrame(blowRAF);
+    if (micStream) micStream.getTracks().forEach(track => track.stop());
+    if (audioCtx) audioCtx.close();
+
+    document.querySelectorAll(".flame").forEach(flame => {
+        flame.style.transition = "opacity 0.4s ease, transform 0.4s ease";
+        flame.style.opacity = "0";
+        flame.style.transform = "translateX(-50%) scaleY(0.1)";
+    });
+
+    document.querySelectorAll(".smoke").forEach(smoke => {
+        smoke.style.transition = "opacity 1.2s ease, transform 1.2s ease";
+        smoke.style.opacity = "0.7";
+        smoke.style.transform = "translateX(-50%) translateY(-60px)";
+    });
+
+    document.getElementById("micStatus").innerText = "🎉 Wish made!";
+
+    playPuffSound();
+
+    setTimeout(revealCard, 1200);
+}
+
+// Generates a short "puff of air" whoosh sound live — no audio file required
+function playPuffSound() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const duration = 0.4;
+        const bufferSize = ctx.sampleRate * duration;
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        // Decaying white noise = the "puff" texture
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        // Sweep the tone downward so it sounds like air trailing off, not static
+        const filter = ctx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.setValueAtTime(1500, ctx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + duration);
+
+        const gainNode = ctx.createGain();
+        gainNode.gain.setValueAtTime(0.5, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+
+        noise.connect(filter);
+        filter.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        noise.start();
+        noise.stop(ctx.currentTime + duration);
+    } catch (e) {
+        console.log("Puff sound unavailable:", e);
+    }
+}
+
+// 2b. Reveal the birthday card — this is the old openGift logic, now triggered after the candle
+function revealCard() {
+    document.getElementById("cake-stage").style.display = "none";
     document.getElementById("opened-card").style.display = "block";
 
-    // Play the background music
     const audio = document.getElementById("bdayAudio");
     audio.play().catch(error => console.log("Audio play blocked by browser"));
+
+    // NEW: fade in the fireworks GIF background and play the firework burst sound
+    document.getElementById("fireworks-bg").classList.add("active");
+    const fireworkAudio = document.getElementById("fireworkAudio");
+    fireworkAudio.play().catch(error => console.log("Firework audio blocked by browser"));
 
     confetti({
         particleCount: 150,
