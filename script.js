@@ -29,7 +29,7 @@ async function createBirthdayLink() {
         const formData = new FormData();
         formData.append("image", photoFile);
         // Using your specific ImgBB API Key
-// here i not aplode the APi for sequrity
+        const apiKey = 'd6572cc7df8598ddec0815512f6991a7';
         
         try {
             const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
