@@ -4,9 +4,15 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Outfit', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    overflow-x: hidden;
 }
 
 body {
+    overflow-x: hidden;
     /* Uses your AI generated background */
     background-image: url('bday-bg.jpg'); 
     background-size: cover;
@@ -18,7 +24,14 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    min-height: 100dvh; /* accounts for mobile browser address-bar height changes */
     padding: 20px;
+}
+
+/* Any image (uploaded photos, gift box, etc.) never exceeds its container, however it's sized elsewhere */
+img {
+    max-width: 100%;
+    height: auto;
 }
 
 /* --- Glassmorphism UI Panels --- */
@@ -61,35 +74,42 @@ body {
 h1 {
     font-family: 'Fredoka', sans-serif;
     font-weight: 700;
-    font-size: 28px;
+    font-size: clamp(22px, 6vw, 28px);
     margin-bottom: 10px;
     background: linear-gradient(to right, #f8cdda, #1d2b64);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 /* The birthday person's name gets a handwritten, celebratory script look */
 #displayName {
     font-family: 'Great Vibes', cursive;
     font-weight: 400;
-    font-size: 46px;
+    font-size: clamp(28px, 9vw, 46px);
     line-height: 1.3;
     letter-spacing: 0.5px;
     margin-bottom: 6px;
     background: linear-gradient(to right, #FFC75F, #f8cdda, #845EC2);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 p {
     color: #d1d5db;
     font-size: 14px;
     margin-bottom: 25px;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 /* --- Inputs & Textareas --- */
 input[type="text"], textarea {
     width: 100%;
+    min-height: 48px;
     padding: 15px;
     margin-bottom: 15px;
     background: rgba(0, 0, 0, 0.3);
@@ -189,6 +209,7 @@ button {
     color: white;
     border: none;
     padding: 16px;
+    min-height: 50px;
     width: 100%;
     border-radius: 12px;
     font-size: 16px;
@@ -196,7 +217,7 @@ button {
     cursor: pointer;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     box-shadow: 0 8px 20px rgba(132, 94, 194, 0.4);
-    margin-top: 10px;
+    margin-top: 12px;
 }
 
 button:hover {
@@ -215,6 +236,10 @@ button:hover {
     gap: 10px;
 }
 
+#finalLink {
+    text-overflow: ellipsis;
+}
+
 /* --- The Unboxing Experience UI --- */
 #tap-to-open {
     text-align: center;
@@ -222,9 +247,104 @@ button:hover {
 }
 
 .floating-box {
-    width: 250px;
-    animation: float 3s ease-in-out infinite;
+    width: clamp(160px, 55vw, 250px);
+    max-width: 100%;
+    animation: float 3s ease-in-out infinite, boxWiggle 4s ease-in-out infinite;
     filter: drop-shadow(0 20px 30px rgba(0,0,0,0.8));
+    transition: transform 0.2s ease, filter 0.2s ease;
+}
+
+/* Brief shake + glow burst the instant the box is tapped */
+#tap-to-open.box-tapped .floating-box {
+    animation: boxTapPulse 0.4s ease;
+    filter: drop-shadow(0 0 40px rgba(248, 205, 218, 0.9)) drop-shadow(0 20px 30px rgba(0,0,0,0.8));
+}
+
+@keyframes boxWiggle {
+    0%, 100% { transform: rotate(0deg); }
+    92% { transform: rotate(0deg); }
+    94% { transform: rotate(-3deg); }
+    96% { transform: rotate(3deg); }
+    98% { transform: rotate(-2deg); }
+}
+
+@keyframes boxTapPulse {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.15); }
+    100% { transform: scale(0.85); opacity: 0; }
+}
+
+/* --- Mysterious intro screen, shown before the gift box --- */
+#mystery-intro {
+    animation: fadeIn 0.8s ease;
+}
+
+.intro-icon {
+    font-size: 56px;
+    margin-bottom: 10px;
+    animation: float 3s ease-in-out infinite;
+}
+
+.intro-text {
+    font-size: 15px;
+    color: #d1d5db;
+    margin-bottom: 20px;
+}
+
+/* --- Story progress indicator --- */
+.story-progress {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+.story-progress .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0.4;
+    transition: opacity 0.4s ease;
+}
+
+.story-progress .step span {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Fredoka', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+    transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.story-progress .step label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #d1d5db;
+}
+
+.story-progress .step.active {
+    opacity: 1;
+}
+.story-progress .step.active span {
+    background: linear-gradient(135deg, #FF6B6B, #845EC2);
+    border-color: transparent;
+    box-shadow: 0 0 12px rgba(248, 205, 218, 0.6);
+}
+.story-progress .step.done {
+    opacity: 0.85;
+}
+.story-progress .step.done span {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: transparent;
 }
 
 /* The moment the card appears: pop in with a little bounce, then keep a soft glow pulsing */
@@ -444,20 +564,21 @@ button:hover {
     margin-bottom: 10px;
 }
 
-.volume-meter {
-    width: 100%;
-    height: 10px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    overflow: hidden;
+.waveform {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 5px;
+    height: 32px;
     margin-bottom: 15px;
 }
 
-.volume-fill {
-    height: 100%;
-    width: 0%;
-    background: linear-gradient(90deg, #845EC2, #FF6B6B);
-    transition: width 0.05s linear;
+.wave-bar {
+    width: 5px;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #FF6B6B, #845EC2);
+    transition: height 0.08s ease;
 }
 
 .fallback-blow-btn {
@@ -576,4 +697,130 @@ button:hover {
     0% { transform: translateY(0) scale(0.4); opacity: 0; }
     15% { opacity: 1; }
     100% { transform: translateY(-280px) scale(1); opacity: 0; }
+}
+
+/* ============================================= */
+/* MOBILE POLISH: narrow screens (most phones)    */
+/* ============================================= */
+@media (max-width: 400px) {
+    body {
+        padding: 12px;
+    }
+
+    .glass-panel {
+        padding: 30px 20px;
+        border-radius: 20px;
+    }
+
+    /* Scale the whole hand-built cake+candles uniformly so nothing misaligns */
+    .cake-scene {
+        transform: scale(0.82);
+        transform-origin: center bottom;
+        margin-top: 0;
+        margin-bottom: 4px;
+    }
+
+    .story-progress {
+        gap: 14px;
+    }
+
+    .story-progress .step span {
+        width: 22px;
+        height: 22px;
+        font-size: 11px;
+    }
+
+    .story-progress .step label {
+        font-size: 9px;
+    }
+
+    .age-grid {
+        gap: 10px 4px;
+    }
+
+    .age-unit span {
+        font-size: 21px;
+    }
+
+    .bday-profile-img {
+        width: 110px;
+        height: 110px;
+    }
+
+    .intro-icon {
+        font-size: 46px;
+    }
+}
+
+/* Very narrow / old phones (e.g. Galaxy Fold outer screen, small Android) */
+@media (max-width: 300px) {
+    .cake-scene {
+        transform: scale(0.68);
+    }
+
+    .floating-box {
+        width: 130px;
+    }
+}
+
+/* ============================================= */
+/* MOBILE POLISH: short viewports (landscape)     */
+/* ============================================= */
+@media (max-height: 480px) {
+    .glass-panel {
+        padding: 18px 20px;
+    }
+
+    .floating-box {
+        width: clamp(110px, 30vh, 180px);
+    }
+
+    .cake-scene {
+        transform: scale(0.6);
+        margin: -10px auto -10px;
+    }
+
+    .story-progress {
+        margin-bottom: 10px;
+    }
+
+    .intro-icon {
+        font-size: 32px;
+        margin-bottom: 4px;
+    }
+
+    .intro-text {
+        margin-bottom: 10px;
+    }
+
+    .bday-profile-img {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 8px;
+    }
+
+    #displayName {
+        font-size: clamp(22px, 7vw, 32px);
+    }
+
+    .bday-quote {
+        margin: 8px 0;
+    }
+
+    .age-counter {
+        padding: 10px 8px;
+        margin: 10px 0;
+    }
+}
+
+/* ============================================= */
+/* Respect users who've asked for reduced motion  */
+/* ============================================= */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
 }
