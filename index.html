@@ -82,8 +82,24 @@
         <!-- NEW: Fireworks GIF overlay, faded in during the celebration reveal -->
         <!-- IMPORTANT: rename your uploaded gif to fireworks.gif (or update this filename to match) -->
         <div id="fireworks-bg" class="fireworks-bg"></div>
-        
-        <div id="tap-to-open" onclick="openGift()">
+
+        <!-- NEW: Subtle story progress indicator, visible through the whole unboxing journey -->
+        <div class="story-progress" id="storyProgress">
+            <div class="step active" data-step="1"><span>1</span><label>Gift</label></div>
+            <div class="step" data-step="2"><span>2</span><label>Wish</label></div>
+            <div class="step" data-step="3"><span>3</span><label>Blow</label></div>
+            <div class="step" data-step="4"><span>4</span><label>Surprise</label></div>
+        </div>
+
+        <!-- NEW: Mysterious intro before the gift box appears -->
+        <div id="mystery-intro" class="glass-panel">
+            <div class="intro-icon">🎁</div>
+            <h2 class="glow-text" style="font-size: 22px;">A Special Birthday Surprise</h2>
+            <p class="intro-text">Someone has prepared something special for you...</p>
+            <button onclick="startUnboxing()">Open Your Gift</button>
+        </div>
+
+        <div id="tap-to-open" onclick="openGift()" style="display: none;">
             <h2 class="glow-text">Tap to Open Your Gift!</h2>
             <img src="giftbox.jpg" alt="Gift Box" class="floating-box">
         </div>
@@ -115,7 +131,13 @@
             </div>
 
             <p class="mic-status" id="micStatus">🎤 Requesting microphone…</p>
-            <div class="volume-meter"><div class="volume-fill" id="volumeFill"></div></div>
+            <div class="waveform" id="waveform">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
 
             <button id="fallbackBlowBtn" class="fallback-blow-btn" style="display: none;" onclick="extinguishCandle()">Can't blow? Tap here instead 💨</button>
         </div>
