@@ -29,7 +29,7 @@ async function createBirthdayLink() {
         const formData = new FormData();
         formData.append("image", photoFile);
         // Using your specific ImgBB API Key
-        const apiKey = 'd6572cc7df8598ddec0815512f6991a7'; 
+// here i not aplode the APi for sequrity
         
         try {
             const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
@@ -61,11 +61,33 @@ async function createBirthdayLink() {
     btn.disabled = false;
 }
 
+// NEW: Moves from the mystery intro to the gift box screen
+function startUnboxing() {
+    document.getElementById("mystery-intro").style.display = "none";
+    document.getElementById("tap-to-open").style.display = "block";
+}
+
+// NEW: Highlights the current step in the story progress indicator (1-4)
+function setStoryStep(n) {
+    document.querySelectorAll(".story-progress .step").forEach(step => {
+        const stepNum = parseInt(step.dataset.step, 10);
+        step.classList.remove("active", "done");
+        if (stepNum < n) step.classList.add("done");
+        if (stepNum === n) step.classList.add("active");
+    });
+}
+
 // 2. Tapping the gift box moves to the candle-blowing stage
 function openGift() {
-    document.getElementById("tap-to-open").style.display = "none";
-    document.getElementById("cake-stage").style.display = "block";
-    initCandleBlow();
+    const box = document.getElementById("tap-to-open");
+    box.classList.add("box-tapped"); // brief shake + glow burst before transitioning
+    setStoryStep(2);
+
+    setTimeout(() => {
+        box.style.display = "none";
+        document.getElementById("cake-stage").style.display = "block";
+        initCandleBlow();
+    }, 350);
 }
 
 // --- Mic-reactive candle blowing ---
@@ -83,6 +105,7 @@ async function initCandleBlow() {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         micStatus.innerText = "🎤 Mic not supported on this browser — use the button below.";
         fallbackBtn.style.display = "block";
+        setStoryStep(3);
         startIdleFlicker();
         return;
     }
@@ -96,12 +119,24 @@ async function initCandleBlow() {
         source.connect(analyser);
 
         micStatus.innerText = "🎤 Blow into your mic now!";
+        setStoryStep(3);
         blowLoop();
     } catch (err) {
         micStatus.innerText = "🎤 Mic access denied — use the button below instead.";
         fallbackBtn.style.display = "block";
+        setStoryStep(3);
         startIdleFlicker();
     }
+}
+
+// Drives the 5-bar waveform display from live mic volume, each bar varying slightly for a natural look
+function updateWaveform(volume) {
+    const bars = document.querySelectorAll(".wave-bar");
+    bars.forEach((bar, i) => {
+        const variation = 0.7 + Math.sin(idlePhase * 2 + i * 1.7) * 0.3; // each bar bounces slightly out of sync
+        const height = Math.max(6, Math.min(volume * 260 * variation, 32));
+        bar.style.height = `${height}px`;
+    });
 }
 
 // Runs every animation frame while the mic is active
@@ -121,7 +156,7 @@ function blowLoop() {
     smoothedVolume += (rms - smoothedVolume) * 0.3;
 
     animateFlame(smoothedVolume);
-    document.getElementById("volumeFill").style.width = Math.min(smoothedVolume * 300, 100) + "%";
+    updateWaveform(smoothedVolume);
 
     // More/longer blowing fills the meter faster; it also drains slowly when you stop
     if (smoothedVolume > BLOW_THRESHOLD) {
@@ -242,6 +277,7 @@ function playPuffSound() {
 function revealCard() {
     document.getElementById("cake-stage").style.display = "none";
     document.getElementById("opened-card").style.display = "block";
+    setStoryStep(4);
 
     const audio = document.getElementById("bdayAudio");
     audio.play().catch(error => console.log("Audio play blocked by browser"));
@@ -267,7 +303,13 @@ function createSparkles() {
     const container = document.getElementById("sparkles");
     if (!container) return;
 
-    const sparkleCount = 22;
+    // Respect reduced-motion preference entirely — skip the decorative particles
+    const prefersReducedMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) return;
+
+    // Lighter devices (few CPU cores reported) get fewer particles to stay smooth
+    const isLikelyLowEnd = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4;
+    const sparkleCount = isLikelyLowEnd ? 12 : 22;
     for (let i = 0; i < sparkleCount; i++) {
         const sparkle = document.createElement("span");
         sparkle.className = "sparkle";
